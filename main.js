@@ -1,16 +1,41 @@
+if(!localStorage.getItem("score"))
+    localStorage.setItem("score", 0)
+
 function updateDOM(e){
     document.getElementsByClassName("realgame")[0].innerHTML = e
 }
+
+function updateScore(vaule) {
+    document.getElementById("score").innerHTML = vaule
+}
+
 function RandomInt(){
     return Math.floor(Math.random() * 100)
 }
+
 
 function updateBallLocation(){
     document.getElementById("ball").style.top = `${RandomInt()}%`;
     document.getElementById("ball").style.left = `${RandomInt()}%`;
 }
-localStorage.setItem("speed", "1000")
-let GameStorage = localStorage.getItem("speed")
+
+localStorage.setItem("speed", "3000")
+let GameStorage = {
+    getSpeed: () => {
+        return localStorage.getItem("speed")
+    },
+    setScore: (value) => {
+        localStorage.setItem("score", value)
+    },
+    getScore: () => {
+        return parseInt(localStorage.getItem("score"))
+    },
+    increaseScore: () => {
+        let current = GameStorage.getScore()
+        GameStorage.setScore(String(current++))
+    }
+}
+
 const menu = `
 <div class="menu">
             <div class="box">
@@ -27,8 +52,8 @@ const menu = `
 
 const game = `<div class="playpage">
 <div class="header">
-    <p> Score: <span id="score">12</span></p>
-    <p> highiest Score: <span id="high">234</span></p>
+    <p> Score: <span id="score">0</span></p>
+    <p> highiest Score: <span id="high">0</span></p>
     <button class="endgame" onclick="goToMenu()">
         End
     </button>
@@ -37,9 +62,8 @@ const game = `<div class="playpage">
 <div class="clickes">
     <div class="ball" id="ball" onclick="increaseScore()"></div>
 </div>
-</div>
+</div>`
 
-`
 function changeGamePage(pagename){
     if (pagename == "menu")
         updateDOM(menu)
@@ -54,7 +78,7 @@ function StartGame(){
     changeGamePage("game")
     ballRunner = setInterval(() => {
         updateBallLocation()
-    },  parseInt(GameStorage))
+    },  parseInt(GameStorage.getSpeed()))
 }
 
 function goToMenu(){
@@ -63,5 +87,7 @@ function goToMenu(){
 }
 
 function increaseScore(){
-
+    updateBallLocation()
+    GameStorage.increaseScore()
+    updateScore(GameStorage.getScore())
 }
